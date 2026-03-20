@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import JsBarcode from 'jsbarcode';
+import JsBarcode from 'jsbarcode';
 import type { Options } from 'jsbarcode';
 
 defineOptions({ name: 'BarcodePage' });
 
-const text = 'Soybean';
 
 interface CodeConfig {
   id: string;
@@ -89,15 +89,6 @@ function generateBarcode() {
   codes.forEach(code => {
     JsBarcode(`#${code.id}`, code.text, code.options);
   });
-}
-
-onMounted(() => {
-  generateBarcode();
-});
-</script>
-
-<template>
-  <div class="overflow-hidden">
     <ElCard header="条形码" class="h-full card-wrapper">
       <ElScrollbar class="h-full">
         <ElRow :gutter="12" class="w-[calc(100%-12px)]">

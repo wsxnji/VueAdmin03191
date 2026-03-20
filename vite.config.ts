@@ -45,7 +45,33 @@ export default defineConfig(configEnv => {
       sourcemap: viteEnv.VITE_SOURCE_MAP === 'Y',
       commonjsOptions: {
         ignoreTryCatch: false
+      },
+      chunkSizeWarningLimit: 2000,
+      rollupOptions: {
+        output: {
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+          manualChunks: {
+            vue: ['vue', 'vue-router', 'pinia'],
+            vueuse: ['@vueuse/core', '@vueuse/components'],
+            elementPlus: ['element-plus'],
+            echarts: ['echarts/core', 'echarts/charts', 'echarts/components', 'echarts/features', 'echarts/renderers'],
+            antv: ['@antv/g2', '@antv/g6', '@antv/data-set'],
+            visactor: [
+              '@visactor/vchart',
+              '@visactor/vue-vtable',
+              '@visactor/vtable-gantt',
+              '@visactor/vtable-editors'
+            ],
+            xlsx: ['xlsx']
+          }
+        }
       }
+    },
+    optimizeDeps: {
+      include: ['vue', 'vue-router', 'pinia', '@vueuse/core', 'element-plus', 'dayjs'],
+      exclude: ['@iconify/json']
     }
   };
 });

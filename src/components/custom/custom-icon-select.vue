@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
 
 defineOptions({ name: 'CustomIconSelect' });
 
@@ -34,8 +35,17 @@ const modelValue = computed({
 const selectedIcon = computed(() => modelValue.value || props.emptyIcon);
 
 const searchValue = ref('');
+const debouncedSearchValue = ref('');
 
-const iconsList = computed(() => props.icons.filter(v => v.includes(searchValue.value)));
+const updateDebouncedSearch = useDebounceFn((val: string) => {
+  debouncedSearchValue.value = val;
+}, 300);
+
+const iconsList = computed(() => props.icons.filter(v => v.includes(debouncedSearchValue.value)));
+
+function handleSearchInput(val: string) {
+  updateDebouncedSearch(val);
+}
 
 function handleChange(iconItem: string) {
   modelValue.value = iconItem;
@@ -45,7 +55,7 @@ function handleChange(iconItem: string) {
 <template>
   <ElPopover placement="bottom-end" trigger="click" width="334" :show-arrow="false">
     <div>
-      <ElInput v-model="searchValue" placeholder="搜索图标" />
+      <ElInput v-model="searchValue" placeholder="搜索图标" @input="handleSearchInput" />
     </div>
     <div v-if="iconsList.length > 0" class="grid grid-cols-9 h-auto overflow-auto">
       <span v-for="iconItem in iconsList" :key="iconItem" @click="handleChange(iconItem)">
