@@ -1,10 +1,28 @@
 <script setup lang="ts">
-import SwiperCore from 'swiper';
-import { Navigation, Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/vue';
+import { ref, shallowRef, defineAsyncComponent, onMounted } from 'vue';
 import type { SwiperOptions } from 'swiper/types';
 
 defineOptions({ name: 'SwiperComp' });
+
+// 使用 defineAsyncComponent 异步加载 Swiper 组件
+const Swiper = defineAsyncComponent(() => 
+  Promise.all([
+    import('swiper/css'),
+    import('swiper/css/navigation'),
+    import('swiper/css/pagination'),
+    import('swiper/vue')
+  ]).then(([,,, swiperVue]) => {
+    // 配置 Swiper 模块
+    return import('swiper').then(({ default: SwiperCore, Navigation, Pagination }) => {
+      SwiperCore.use([Navigation, Pagination]);
+      return swiperVue.Swiper;
+    });
+  })
+);
+
+const SwiperSlide = defineAsyncComponent(() => 
+  import('swiper/vue').then(m => m.SwiperSlide)
+);
 
 type SwiperExampleOptions = Pick<
   SwiperOptions,
@@ -17,7 +35,7 @@ interface SwiperExample {
   options: Partial<SwiperExampleOptions>;
 }
 
-SwiperCore.use([Navigation, Pagination]);
+const isLoaded = ref(false);
 
 const swiperExample: SwiperExample[] = [
   { id: 0, label: 'Default', options: {} },
@@ -29,6 +47,14 @@ const swiperExample: SwiperExample[] = [
   { id: 6, label: 'Slides per view', options: { pagination: { clickable: true }, slidesPerView: 3, spaceBetween: 30 } },
   { id: 7, label: 'Infinite loop', options: { navigation: true, pagination: { clickable: true }, loop: true } }
 ];
+
+onMounted(() => {
+  // 预加载swiper资源
+  import('swiper').then(({ default: SwiperCore, Navigation, Pagination }) => {
+    SwiperCore.use([Navigation, Pagination]);
+    isLoaded.value = true;
+  });
+});
 </script>
 
 <template>
