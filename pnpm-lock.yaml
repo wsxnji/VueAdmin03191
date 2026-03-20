@@ -225,6 +225,9 @@ importers:
       vite:
         specifier: npm:rolldown-vite@7.3.1
         version: rolldown-vite@7.3.1(@types/node@25.0.6)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.97.2)(terser@5.44.0)(tsx@4.21.0)(yaml@2.8.1)
+      vite-plugin-compression2:
+        specifier: ^2.5.2
+        version: 2.5.2
       vite-plugin-progress:
         specifier: 0.0.7
         version: 0.0.7(rolldown-vite@7.3.1(@types/node@25.0.6)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.97.2)(terser@5.44.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -1372,6 +1375,15 @@ packages:
 
   '@rolldown/pluginutils@1.0.0-beta.59':
     resolution: {integrity: sha512-aoh6LAJRyhtazs98ydgpNOYstxUlsOV1KJXcpf/0c0vFcUA8uyd/hwKRhqE/AAPNqAho9RliGsvitCoOzREoVA==}
+
+  '@rollup/pluginutils@5.3.0':
+    resolution: {integrity: sha512-5EdhGZtnu3V88ces7s53hhfK5KSASnJZv8Lulpc04cWO3REESroJXg73DFsOmgbU2BhwV0E20bu2IDZb3VKW4Q==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
 
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
@@ -4939,6 +4951,9 @@ packages:
     resolution: {integrity: sha512-ZL6DDuAlRlLGghwcfmSn9sK3Hr6ArtyudlSAiCqQ6IfE+b+HHbydbYDIG15IfS5do+7XQQBdBiubF/cV2dnDzg==}
     engines: {node: '>=6'}
 
+  tar-mini@0.2.0:
+    resolution: {integrity: sha512-+qfUHz700DWnRutdUsxRRVZ38G1Qr27OetwaMYTdg8hcPxf46U0S1Zf76dQMWRBmusOt2ZCK5kbIaiLkoGO7WQ==}
+
   terser-webpack-plugin@5.3.14:
     resolution: {integrity: sha512-vkZjpUjb6OMS7dhV+tILUW6BhpDR7P2L/aQSAv+Uwk+m8KATX9EccViHTJR2qDtACKPIYndLGCyl3FMo+r2LMw==}
     engines: {node: '>= 10.13.0'}
@@ -5218,6 +5233,9 @@ packages:
     resolution: {integrity: sha512-7SpgZmU7R+dDnSmvXE1mfDtnHLHQSisdySVR7lO8ceAXvM0otZeuQQ6C8LrS5d/aYyP/QZ0hI0L+dIPrm4YlFQ==}
     peerDependencies:
       vite: ^2.6.0 || ^3.0.0 || ^4.0.0 || ^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0
+
+  vite-plugin-compression2@2.5.2:
+    resolution: {integrity: sha512-a1eAY2Ux5JrflaWStWUa7yoMnjhw3tx7y6vQIp20QZ9K57wcKxYT+DUJiAG4VSEvmFMjeo9a5R2phdBriOJ/1A==}
 
   vite-plugin-inspect@11.3.3:
     resolution: {integrity: sha512-u2eV5La99oHoYPHE6UvbwgEqKKOQGz86wMg40CCosP6q8BkB6e5xPneZfYagK4ojPJSj5anHCrnvC20DpwVdRA==}
@@ -6600,6 +6618,12 @@ snapshots:
   '@rolldown/pluginutils@1.0.0-beta.53': {}
 
   '@rolldown/pluginutils@1.0.0-beta.59': {}
+
+  '@rollup/pluginutils@5.3.0':
+    dependencies:
+      '@types/estree': 1.0.8
+      estree-walker: 2.0.2
+      picomatch: 4.0.3
 
   '@sec-ant/readable-stream@0.4.1': {}
 
@@ -10522,6 +10546,8 @@ snapshots:
 
   tapable@2.2.3: {}
 
+  tar-mini@0.2.0: {}
+
   terser-webpack-plugin@5.3.14(esbuild@0.27.2)(webpack@5.101.3(esbuild@0.27.2)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.30
@@ -10851,6 +10877,13 @@ snapshots:
     dependencies:
       vite: rolldown-vite@7.3.1(@types/node@25.0.6)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.97.2)(terser@5.44.0)(tsx@4.21.0)(yaml@2.8.1)
 
+  vite-plugin-compression2@2.5.2:
+    dependencies:
+      '@rollup/pluginutils': 5.3.0
+      tar-mini: 0.2.0
+    transitivePeerDependencies:
+      - rollup
+
   vite-plugin-inspect@11.3.3(rolldown-vite@7.3.1(@types/node@25.0.6)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.97.2)(terser@5.44.0)(tsx@4.21.0)(yaml@2.8.1)):
     dependencies:
       ansis: 4.1.0
@@ -11002,7 +11035,7 @@ snapshots:
       '@webassemblyjs/wasm-parser': 1.14.1
       acorn: 8.15.0
       acorn-import-phases: 1.0.4(acorn@8.15.0)
-      browserslist: 4.25.4
+      browserslist: 4.28.1
       chrome-trace-event: 1.0.4
       enhanced-resolve: 5.18.3
       es-module-lexer: 1.7.0

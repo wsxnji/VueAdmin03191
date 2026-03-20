@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { onMounted, shallowRef } from 'vue';
-import TypeIt from 'typeit';
 import type { Options } from 'typeit';
 import type { El } from 'typeit/dist/types';
 
@@ -8,8 +7,10 @@ defineOptions({ name: 'TypeIt' });
 
 const textRef = shallowRef<El>();
 
-function init() {
+async function init() {
   if (!textRef.value) return;
+
+  const { default: TypeIt } = await import('typeit');
 
   const options: Options = {
     strings: 'SoybeanAdmin是一个清新优雅、高颜值且功能强大的后台管理模板',

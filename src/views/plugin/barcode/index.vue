@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import JsBarcode from 'jsbarcode';
 import type { Options } from 'jsbarcode';
 
 defineOptions({ name: 'BarcodePage' });
@@ -85,7 +84,8 @@ const codes: CodeConfig[] = [
   }
 ];
 
-function generateBarcode() {
+async function generateBarcode() {
+  const { default: JsBarcode } = await import('jsbarcode');
   codes.forEach(code => {
     JsBarcode(`#${code.id}`, code.text, code.options);
   });

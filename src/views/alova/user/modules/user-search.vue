@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
 import { enableStatusOptions, userGenderOptions } from '@/constants/business';
 import { useForm, useFormRules } from '@/hooks/common/form';
 import { translateOptions } from '@/utils/common';
@@ -39,6 +40,16 @@ async function search() {
   await validate();
   emit('search');
 }
+
+const debouncedSearch = useDebounceFn(search, 300);
+
+watch(
+  () => [model.value.userName, model.value.nickName, model.value.userPhone, model.value.userEmail],
+  () => {
+    debouncedSearch();
+  },
+  { deep: true }
+);
 </script>
 
 <template>

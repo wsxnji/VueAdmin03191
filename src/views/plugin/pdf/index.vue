@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, shallowRef } from 'vue';
-import VuePdfEmbed from 'vue-pdf-embed';
+import { defineAsyncComponent, ref, shallowRef } from 'vue';
 import { useLoading } from '@sa/hooks';
 
 defineOptions({ name: 'PdfPage' });
+
+// 动态导入 vue-pdf-embed
+const VuePdfEmbed = defineAsyncComponent(() => import('vue-pdf-embed'));
 
 const { loading, endLoading } = useLoading(true);
 

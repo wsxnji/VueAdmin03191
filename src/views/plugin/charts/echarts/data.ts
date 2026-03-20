@@ -543,7 +543,7 @@ export const gaugeOptions: ECOption = {
       axisLabel: {
         fontSize: 50,
         distance: 25,
-        formatter(value) {
+        formatter(value: number) {
           if (value === 0) {
             return '';
           }

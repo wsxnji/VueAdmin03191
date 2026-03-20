@@ -1,77 +1,66 @@
 import { computed, effectScope, nextTick, onScopeDispose, ref, watch } from 'vue';
 import { useElementSize } from '@vueuse/core';
-import * as echarts from 'echarts/core';
-import { BarChart, GaugeChart, LineChart, PictorialBarChart, PieChart, RadarChart, ScatterChart } from 'echarts/charts';
-import type {
-  BarSeriesOption,
-  GaugeSeriesOption,
-  LineSeriesOption,
-  PictorialBarSeriesOption,
-  PieSeriesOption,
-  RadarSeriesOption,
-  ScatterSeriesOption
-} from 'echarts/charts';
-import {
-  DatasetComponent,
-  GridComponent,
-  LegendComponent,
-  TitleComponent,
-  ToolboxComponent,
-  TooltipComponent,
-  TransformComponent
-} from 'echarts/components';
-import type {
-  DatasetComponentOption,
-  GridComponentOption,
-  LegendComponentOption,
-  TitleComponentOption,
-  ToolboxComponentOption,
-  TooltipComponentOption
-} from 'echarts/components';
-import { LabelLayout, UniversalTransition } from 'echarts/features';
-import { CanvasRenderer } from 'echarts/renderers';
+import type { ECharts, EChartsCoreOption } from 'echarts/core';
 import { useThemeStore } from '@/store/modules/theme';
 
-export type ECOption = echarts.ComposeOption<
-  | BarSeriesOption
-  | LineSeriesOption
-  | PieSeriesOption
-  | ScatterSeriesOption
-  | PictorialBarSeriesOption
-  | RadarSeriesOption
-  | GaugeSeriesOption
-  | TitleComponentOption
-  | LegendComponentOption
-  | TooltipComponentOption
-  | GridComponentOption
-  | ToolboxComponentOption
-  | DatasetComponentOption
->;
+export type ECOption = EChartsCoreOption;
 
-echarts.use([
-  TitleComponent,
-  LegendComponent,
-  TooltipComponent,
-  GridComponent,
-  DatasetComponent,
-  TransformComponent,
-  ToolboxComponent,
-  BarChart,
-  LineChart,
-  PieChart,
-  ScatterChart,
-  PictorialBarChart,
-  RadarChart,
-  GaugeChart,
-  LabelLayout,
-  UniversalTransition,
-  CanvasRenderer
-]);
+// 动态导入 echarts
+let echartsInstance: typeof import('echarts/core') | null = null;
+
+async function initEcharts() {
+  if (echartsInstance) return echartsInstance;
+
+  const [
+    echarts,
+    { BarChart, GaugeChart, LineChart, PictorialBarChart, PieChart, RadarChart, ScatterChart },
+    {
+      DatasetComponent,
+      GridComponent,
+      LegendComponent,
+      TitleComponent,
+      ToolboxComponent,
+      TooltipComponent,
+      TransformComponent
+    },
+    { LabelLayout, UniversalTransition },
+    { CanvasRenderer }
+  ] = await Promise.all([
+    import('echarts/core'),
+    import('echarts/charts'),
+    import('echarts/components'),
+    import('echarts/features'),
+    import('echarts/renderers')
+  ]);
+
+  echarts.use([
+    TitleComponent,
+    LegendComponent,
+    TooltipComponent,
+    GridComponent,
+    DatasetComponent,
+    TransformComponent,
+    ToolboxComponent,
+    BarChart,
+    LineChart,
+    PieChart,
+    ScatterChart,
+    PictorialBarChart,
+    RadarChart,
+    GaugeChart,
+    LabelLayout,
+    UniversalTransition,
+    CanvasRenderer
+  ]);
+
+  echartsInstance = echarts;
+  return echarts;
+}
 
 interface ChartHooks {
-  onRender?: (chart: echarts.ECharts) => void | Promise<void>;
-  onUpdated?: (chart: echarts.ECharts) => void | Promise<void>;
-  onDestroy?: (chart: echarts.ECharts) => void | Promise<void>;
+  onRender?: (chart: ECharts) => void | Promise<void>;
+  onUpdated?: (chart: ECharts) => void | Promise<void>;
+  onDestroy?: (chart: ECharts) => void | Promise<void>;
 }
 
 /**
@@ -90,7 +79,7 @@ export function useEcharts<T extends ECOption>(optionsFactory: () => T, hooks: C
   const initialSize = { width: 0, height: 0 };
   const { width, height } = useElementSize(domRef, initialSize);
 
-  let chart: echarts.ECharts | null = null;
+  let chart: ECharts | null = null;
   const chartOptions: T = optionsFactory();
 
   const {
@@ -153,11 +142,12 @@ export function useEcharts<T extends ECOption>(optionsFactory: () => T, hooks: C
   /** render chart */
   async function render() {
     if (!isRendered()) {
+      const echarts = await initEcharts();
       const chartTheme = darkMode.value ? 'dark' : 'light';
 
       await nextTick();
 
-      chart = echarts.init(domRef.value, chartTheme);
+      chart = echarts.init(domRef.value!, chartTheme);
 
       chart.setOption({ ...chartOptions, backgroundColor: 'transparent' });
 

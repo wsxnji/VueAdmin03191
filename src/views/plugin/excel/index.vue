@@ -1,7 +1,6 @@
 <script setup lang="tsx">
 import { reactive } from 'vue';
 import { ElButton, ElTag } from 'element-plus';
-import { utils, writeFile } from 'xlsx';
 import { enableStatusRecord, userGenderRecord } from '@/constants/business';
 import { fetchGetUserList } from '@/service/api';
 import { defaultTransform, useUIPaginatedTable } from '@/hooks/common/table';
@@ -75,7 +74,9 @@ const { columns, data, loading } = useUIPaginatedTable({
   ]
 });
 
-function exportExcel() {
+async function exportExcel() {
+  const { utils, writeFile } = await import('xlsx');
+
   const exportColumns = columns.value.slice(2);
 
   const excelList = data.value.map(item => exportColumns.map(col => getTableValue(col, item)));

@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import WangEditor from 'wangeditor';
+import { onMounted, ref, shallowRef } from 'vue';
+import type WangEditor from 'wangeditor';
 
 defineOptions({ name: 'QuillPage' });
 
-const editor = ref<WangEditor>();
+const editor = shallowRef<WangEditor>();
 const domRef = ref<HTMLElement>();
 
-function renderWangEditor() {
-  editor.value = new WangEditor(domRef.value);
+async function renderWangEditor() {
+  const { default: WangEditorClass } = await import('wangeditor');
+  editor.value = new WangEditorClass(domRef.value);
   setEditorConfig();
   editor.value.create();
 }

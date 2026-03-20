@@ -1,8 +1,6 @@
 <script setup lang="tsx">
 import { onMounted, shallowRef } from 'vue';
-import { gantt } from 'dhtmlx-gantt';
 import type { GanttConfigOptions, ZoomLevel } from 'dhtmlx-gantt';
-import 'dhtmlx-gantt/codebase/dhtmlxgantt.css';
 import { ganttTasks } from './data';
 
 defineOptions({ name: 'GanttPage' });
@@ -26,8 +24,17 @@ const data: TimeData[] = [
   { label: '年', value: 'year' }
 ];
 
-function initGantt() {
+let gantt: typeof import('dhtmlx-gantt').gantt | null = null;
+
+async function initGantt() {
   if (!ganttRef.value) return;
+
+  const [{ gantt: ganttModule }] = await Promise.all([
+    import('dhtmlx-gantt'),
+    import('dhtmlx-gantt/codebase/dhtmlxgantt.css')
+  ]);
+
+  gantt = ganttModule;
 
   const config: Partial<GanttConfigOptions> = {
     grid_width: 350,
@@ -63,8 +70,8 @@ function initGantt() {
           unit: 'week',
           step: 1,
           format(date: Date) {
-            const dateToStr = gantt.date.date_to_str('%m-%d');
-            const endDate = gantt.date.add(date, -6, 'day'); // 第几周
+            const dateToStr = gantt!.date.date_to_str('%m-%d');
+            const endDate = gantt!.date.add(date, -6, 'day'); // 第几周
             return `${dateToStr(endDate)} 至 ${dateToStr(date)}`;
           }
         },
@@ -110,8 +117,8 @@ function initGantt() {
           step: 1,
           format(date: Date) {
             const yearStr = `${new Date(date).getFullYear()}年`;
-            const dateToStr = gantt.date.date_to_str('%M');
-            const endDate = gantt.date.add(gantt.date.add(date, 3, 'month'), -1, 'day');
+            const dateToStr = gantt!.date.date_to_str('%M');
+            const endDate = gantt!.date.add(gantt!.date.add(date, 3, 'month'), -1, 'day');
             return `${yearStr + dateToStr(date)} - ${dateToStr(endDate)}`;
           }
         },
@@ -119,8 +126,8 @@ function initGantt() {
           unit: 'week',
           step: 1,
           format(date: Date) {
-            const dateToStr = gantt.date.date_to_str('%m-%d');
-            const endDate = gantt.date.add(date, 6, 'day');
+            const dateToStr = gantt!.date.date_to_str('%m-%d');
+            const endDate = gantt!.date.add(date, 6, 'day');
             return `${dateToStr(date)} 至 ${dateToStr(endDate)}`;
           }
         }
@@ -143,7 +150,7 @@ function initGantt() {
 
 function changeTime(value: string | number) {
   timeType.value = value as TimeType;
-  gantt.ext.zoom.setLevel(value);
+  gantt?.ext.zoom.setLevel(value);
 }
 
 onMounted(() => {

@@ -1,6 +1,7 @@
 import process from 'node:process';
 import { URL, fileURLToPath } from 'node:url';
 import { defineConfig, loadEnv } from 'vite';
+import compression from 'vite-plugin-compression2';
 import { setupVitePlugins } from './build/plugins';
 import { createViteProxy, getBuildTime } from './build/config';
 
@@ -27,7 +28,14 @@ export default defineConfig(configEnv => {
         }
       }
     },
-    plugins: setupVitePlugins(viteEnv, buildTime),
+    plugins: [
+      ...setupVitePlugins(viteEnv, buildTime),
+      compression({
+        exclude: [/\.(br)$/, /\.(gz)$/],
+        threshold: 1024,
+        deleteOriginalAssets: false
+      })
+    ],
     define: {
       BUILD_TIME: JSON.stringify(buildTime)
     },
