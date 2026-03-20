@@ -1,13 +1,12 @@
 <script setup lang="tsx">
-import { onMounted, shallowRef } from 'vue';
-import { gantt } from 'dhtmlx-gantt';
+import { onMounted, shallowRef, onUnmounted } from 'vue';
 import type { GanttConfigOptions, ZoomLevel } from 'dhtmlx-gantt';
-import 'dhtmlx-gantt/codebase/dhtmlxgantt.css';
 import { ganttTasks } from './data';
 
 defineOptions({ name: 'GanttPage' });
 
 const ganttRef = shallowRef<HTMLElement>();
+const ganttInstance = shallowRef<any>(null);
 
 type TimeType = 'day' | 'week' | 'month' | 'quarter' | 'year';
 
@@ -26,7 +25,19 @@ const data: TimeData[] = [
   { label: '年', value: 'year' }
 ];
 
-function initGantt() {
+// 动态加载 dhtmlx-gantt
+async function loadGantt() {
+  if (!ganttRef.value) return;
+
+  // 动态导入CSS和JS
+  await import('dhtmlx-gantt/codebase/dhtmlxgantt.css');
+  const { gantt } = await import('dhtmlx-gantt');
+
+  ganttInstance.value = gantt;
+  initGantt(gantt);
+}
+
+function initGantt(gantt: any) {
   if (!ganttRef.value) return;
 
   const config: Partial<GanttConfigOptions> = {
@@ -64,7 +75,7 @@ function initGantt() {
           step: 1,
           format(date: Date) {
             const dateToStr = gantt.date.date_to_str('%m-%d');
-            const endDate = gantt.date.add(date, -6, 'day'); // 第几周
+            const endDate = gantt.date.add(date, -6, 'day');
             return `${dateToStr(endDate)} 至 ${dateToStr(date)}`;
           }
         },
@@ -143,11 +154,20 @@ function initGantt() {
 
 function changeTime(value: string | number) {
   timeType.value = value as TimeType;
-  gantt.ext.zoom.setLevel(value);
+  if (ganttInstance.value) {
+    ganttInstance.value.ext.zoom.setLevel(value);
+  }
 }
 
 onMounted(() => {
-  initGantt();
+  loadGantt();
+});
+
+onUnmounted(() => {
+  if (ganttInstance.value) {
+    ganttInstance.value.clearAll();
+    ganttInstance.value = null;
+  }
 });
 </script>
 

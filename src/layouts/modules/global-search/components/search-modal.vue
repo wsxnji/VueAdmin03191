@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { computed, ref, shallowRef } from 'vue';
+import { computed, ref, shallowRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { onKeyStroke, useDebounceFn } from '@vueuse/core';
+import { onKeyStroke } from '@vueuse/core';
 import type { InputInstance } from 'element-plus';
 import { useRouteStore } from '@/store/modules/route';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
+import { useDebounce, useDebounceFn } from '@sa/hooks';
 import SearchResult from './search-result.vue';
 import SearchFooter from './search-footer.vue';
 
@@ -21,21 +22,37 @@ const keyword = ref('');
 const activePath = ref('');
 const resultOptions = shallowRef<App.Global.Menu[]>([]);
 
-const handleSearch = useDebounceFn(search, 300);
+// 使用自定义防抖hook优化搜索
+const debouncedKeyword = useDebounce(keyword, { wait: 300 });
 
-const visible = defineModel<boolean>('show', { required: true });
+function search(searchKeyword: string) {
+  const trimKeyword = searchKeyword.toLocaleLowerCase().trim();
 
-const searchInput = ref<InputInstance>();
+  if (!trimKeyword) {
+    resultOptions.value = [];
+    activePath.value = '';
+    return;
+  }
 
-function search() {
   resultOptions.value = routeStore.searchMenus.filter(menu => {
-    const trimKeyword = keyword.value.toLocaleLowerCase().trim();
     const title = (menu.i18nKey ? $t(menu.i18nKey) : menu.label).toLocaleLowerCase();
-    return trimKeyword && title.includes(trimKeyword);
+    return title.includes(trimKeyword);
   });
 
   activePath.value = resultOptions.value[0]?.routePath ?? '';
 }
+
+// 监听防抖后的关键词变化
+watch(debouncedKeyword, (newKeyword) => {
+  search(newKeyword);
+}, { immediate: true });
+
+// 提供一个防抖函数用于直接调用
+const { run: handleSearch } = useDebounceFn((val: string) => search(val), 300);
+
+const visible = defineModel<boolean>('show', { required: true });
+
+const searchInput = ref<InputInstance>();
 
 function handleClose() {
   // handle with setTimeout to prevent user from seeing some operations

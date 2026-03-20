@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import JsBarcode from 'jsbarcode';
+import { onMounted, ref } from 'vue';
 import type { Options } from 'jsbarcode';
 
 defineOptions({ name: 'BarcodePage' });
 
 const text = 'Soybean';
+const isLoaded = ref(false);
 
 interface CodeConfig {
   id: string;
@@ -85,10 +85,19 @@ const codes: CodeConfig[] = [
   }
 ];
 
-function generateBarcode() {
-  codes.forEach(code => {
-    JsBarcode(`#${code.id}`, code.text, code.options);
-  });
+async function generateBarcode() {
+  try {
+    // 动态导入 jsbarcode
+    const { default: JsBarcode } = await import('jsbarcode');
+    
+    codes.forEach(code => {
+      JsBarcode(`#${code.id}`, code.text, code.options);
+    });
+    
+    isLoaded.value = true;
+  } catch (error) {
+    console.error('Failed to load JsBarcode:', error);
+  }
 }
 
 onMounted(() => {
