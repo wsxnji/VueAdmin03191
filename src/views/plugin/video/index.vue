@@ -2,10 +2,10 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import Player from 'xgplayer';
 import 'xgplayer/dist/index.min.css';
+import Player from 'xgplayer';
+import 'xgplayer/dist/index.min.css';
 
 defineOptions({ name: 'VideoComp' });
-
-const domRef = ref<HTMLElement>();
 const player = ref<Player>();
 
 function renderXgPlayer() {
@@ -16,23 +16,9 @@ function renderXgPlayer() {
     url,
     playbackRate: [0.5, 0.75, 1, 1.5, 2]
   });
-}
-function destroyXgPlayer() {
-  player.value?.destroy();
-}
-
-onMounted(() => {
-  renderXgPlayer();
-});
-
-onUnmounted(() => {
-  destroyXgPlayer();
-});
 </script>
-
 <template>
   <div>
-    <ElCard header="视频播放器插件" class="h-full card-wrapper">
       <div class="flex-center">
         <div ref="domRef" class="h-auto w-full shadow-md"></div>
       </div>
