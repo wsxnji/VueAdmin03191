@@ -15,6 +15,7 @@ import {
   DatasetComponent,
   GridComponent,
   LegendComponent,
+  SingleAxisComponent,
   TitleComponent,
   ToolboxComponent,
   TooltipComponent,
@@ -24,11 +25,11 @@ import type {
   DatasetComponentOption,
   GridComponentOption,
   LegendComponentOption,
+  SingleAxisComponentOption,
   TitleComponentOption,
   ToolboxComponentOption,
   TooltipComponentOption
 } from 'echarts/components';
-import { LabelLayout, UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 import { useThemeStore } from '@/store/modules/theme';
 
@@ -46,6 +47,7 @@ export type ECOption = echarts.ComposeOption<
   | GridComponentOption
   | ToolboxComponentOption
   | DatasetComponentOption
+  | SingleAxisComponentOption
 >;
 
 echarts.use([
@@ -56,6 +58,7 @@ echarts.use([
   DatasetComponent,
   TransformComponent,
   ToolboxComponent,
+  SingleAxisComponent,
   BarChart,
   LineChart,
   PieChart,
@@ -63,8 +66,6 @@ echarts.use([
   PictorialBarChart,
   RadarChart,
   GaugeChart,
-  LabelLayout,
-  UniversalTransition,
   CanvasRenderer
 ]);
 
