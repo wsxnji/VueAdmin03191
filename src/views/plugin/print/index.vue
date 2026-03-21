@@ -1,8 +1,9 @@
 <script lang="ts" setup>
+import printJS from 'print-js';
+
 defineOptions({ name: 'PrintPage' });
 
-async function printTable() {
-  const { default: printJS } = await import('print-js');
+function printTable() {
   printJS({
     printable: [
       { name: 'soybean', wechat: 'honghuangdc', remark: '欢迎来技术交流' },
@@ -12,8 +13,7 @@ async function printTable() {
     type: 'json'
   });
 }
-async function printImage() {
-  const { default: printJS } = await import('print-js');
+function printImage() {
   printJS({
     printable: [
       'https://i.loli.net/2021/11/24/1J6REWXiHomU2kM.jpg',

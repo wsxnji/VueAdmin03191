@@ -74,9 +74,7 @@ const { columns, data, loading } = useUIPaginatedTable({
   ]
 });
 
-async function exportExcel() {
-  const { utils, writeFile } = await import('xlsx');
-
+function exportExcel() {
   const exportColumns = columns.value.slice(2);
 
   const excelList = data.value.map(item => exportColumns.map(col => getTableValue(col, item)));
