@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue';
-import Vditor from 'vditor';
-import 'vditor/dist/index.css';
+import { onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
+import type Vditor from 'vditor';
 import { useThemeStore } from '@/store/modules/theme';
 
 defineOptions({ name: 'MarkdownPage' });
 
 const theme = useThemeStore();
 
-const vditor = ref<Vditor>();
+const vditor = shallowRef<Vditor>();
 const domRef = ref<HTMLElement>();
 
-function renderVditor() {
+async function renderVditor() {
   if (!domRef.value) return;
-  vditor.value = new Vditor(domRef.value, {
+
+  const [{ default: VditorClass }] = await Promise.all([import('vditor'), import('vditor/dist/index.css')]);
+
+  vditor.value = new VditorClass(domRef.value, {
     minHeight: 400,
     theme: theme.darkMode ? 'dark' : 'classic',
     icon: 'material',

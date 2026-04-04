@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
-import Player from 'xgplayer';
-import 'xgplayer/dist/index.min.css';
+import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
+import type Player from 'xgplayer';
 
 defineOptions({ name: 'VideoComp' });
 
 const domRef = ref<HTMLElement>();
-const player = ref<Player>();
+const player = shallowRef<Player>();
 
-function renderXgPlayer() {
+async function renderXgPlayer() {
   if (!domRef.value) return;
+
+  const [{ default: XgPlayer }] = await Promise.all([import('xgplayer'), import('xgplayer/dist/index.min.css')]);
+
   const url = 'https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/byted-player-videos/1.0.0/xgplayer-demo.mp4';
-  player.value = new Player({
+  player.value = new XgPlayer({
     el: domRef.value,
     url,
     playbackRate: [0.5, 0.75, 1, 1.5, 2]

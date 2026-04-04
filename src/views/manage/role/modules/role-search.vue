@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
 import { enableStatusOptions } from '@/constants/business';
 import { translateOptions } from '@/utils/common';
 import { $t } from '@/locales';
@@ -24,6 +25,16 @@ function reset() {
 function search() {
   emit('search');
 }
+
+const debouncedSearch = useDebounceFn(search, 300);
+
+watch(
+  () => [model.value.roleName, model.value.roleCode],
+  () => {
+    debouncedSearch();
+  },
+  { deep: true }
+);
 </script>
 
 <template>

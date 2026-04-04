@@ -1,10 +1,21 @@
 <script setup lang="ts">
-import SwiperCore from 'swiper';
-import { Navigation, Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/vue';
+import { defineAsyncComponent } from 'vue';
 import type { SwiperOptions } from 'swiper/types';
 
 defineOptions({ name: 'SwiperComp' });
+
+// 动态导入 Swiper 组件
+const Swiper = defineAsyncComponent(async () => {
+  const [{ default: SwiperCore }, { Navigation, Pagination }, { Swiper: SwiperComponent }] = await Promise.all([
+    import('swiper'),
+    import('swiper/modules'),
+    import('swiper/vue')
+  ]);
+  SwiperCore.use([Navigation, Pagination]);
+  return SwiperComponent;
+});
+
+const SwiperSlide = defineAsyncComponent(() => import('swiper/vue').then(m => m.SwiperSlide));
 
 type SwiperExampleOptions = Pick<
   SwiperOptions,
@@ -16,8 +27,6 @@ interface SwiperExample {
   label: string;
   options: Partial<SwiperExampleOptions>;
 }
-
-SwiperCore.use([Navigation, Pagination]);
 
 const swiperExample: SwiperExample[] = [
   { id: 0, label: 'Default', options: {} },
